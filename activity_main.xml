@@ -1,27 +1,59 @@
 <LinearLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     android:orientation="vertical"
-    android:padding="20dp"
+    android:padding="24dp"
+    android:gravity="center"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="match_parent"
+    android:background="#F5F7FA">
 
+    <!-- Title -->
+    <TextView
+        android:text="🔐 Password Analyzer"
+        android:textSize="24sp"
+        android:textStyle="bold"
+        android:textColor="#333"
+        android:layout_marginBottom="24dp"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"/>
+
+    <!-- Password Input -->
     <EditText
         android:id="@+id/passwordInput"
-        android:hint="Enter Password"
+        android:hint="Enter your password"
         android:inputType="textPassword"
+        android:padding="12dp"
+        android:background="@android:drawable/edit_text"
+        android:layout_marginBottom="16dp"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"/>
 
+    <!-- Button -->
     <Button
         android:id="@+id/checkBtn"
         android:text="Check Strength"
+        android:textColor="#FFFFFF"
+        android:backgroundTint="#4CAF50"
+        android:layout_marginBottom="20dp"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"/>
 
+    <!-- Strength Bar -->
+    <ProgressBar
+        android:id="@+id/strengthBar"
+        style="?android:attr/progressBarStyleHorizontal"
+        android:max="100"
+        android:progress="0"
+        android:layout_marginBottom="20dp"
+        android:layout_width="match_parent"
+        android:layout_height="8dp"/>
+
+    <!-- Result -->
     <TextView
         android:id="@+id/resultText"
-        android:textSize="18sp"
-        android:paddingTop="20dp"
+        android:textSize="16sp"
+        android:textColor="#444"
+        android:lineSpacingExtra="4dp"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"/>
 
