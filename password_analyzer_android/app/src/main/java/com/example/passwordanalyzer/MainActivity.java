@@ -1,18 +1,22 @@
 package com.example.passwordanalyzer;
 
+import android.graphics.Color;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.*;
+
 import androidx.appcompat.app.AppCompatActivity;
 
-import com.nulabinc.zxcvbn.Zxcvbn;
+import com.google.android.material.textfield.TextInputEditText;
 import com.nulabinc.zxcvbn.Strength;
+import com.nulabinc.zxcvbn.Zxcvbn;
 
 public class MainActivity extends AppCompatActivity {
 
-    EditText passwordInput;
+    TextInputEditText passwordInput;
     Button checkBtn;
-    TextView resultText;
+    TextView strengthLabel, crackTime, suggestions;
+    ProgressBar strengthBar;
 
     Zxcvbn zxcvbn;
 
@@ -34,48 +38,62 @@ public class MainActivity extends AppCompatActivity {
 
         passwordInput = findViewById(R.id.passwordInput);
         checkBtn = findViewById(R.id.checkBtn);
-        resultText = findViewById(R.id.resultText);
+        strengthLabel = findViewById(R.id.strengthLabel);
+        crackTime = findViewById(R.id.crackTime);
+        suggestions = findViewById(R.id.suggestions);
+        strengthBar = findViewById(R.id.strengthBar);
 
         zxcvbn = new Zxcvbn();
 
-        checkBtn.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                String password = passwordInput.getText().toString();
+        checkBtn.setOnClickListener(view -> {
 
-                if (password.isEmpty()) {
-                    resultText.setText("Enter a password!");
-                    return;
-                }
+            String password = passwordInput.getText().toString();
 
-                Strength strength = zxcvbn.measure(password);
-
-                int score = strength.getScore();
-                String crackTime = strength.getCrackTimesDisplay().getOfflineSlowHashing1e4PerSecond();
-
-                String result = "";
-
-                if (score <= 1) {
-                    result += "Weak Password 😟\n";
-                } else if (score == 2) {
-                    result += "Medium Password 😐\n";
-                } else {
-                    result += "Strong Password 💪\n";
-                }
-
-                result += "Time to crack: " + crackTime + "\n\n";
-
-                result += "Suggestions:\n";
-                for (String s : strength.getFeedback().getSuggestions()) {
-                    result += "- " + s + "\n";
-                }
-
-                if (isCommon(password)) {
-                    result += "\n⚠ Found in common passwords!";
-                }
-
-                resultText.setText(result);
+            if (password.isEmpty()) {
+                strengthLabel.setText("Enter a password!");
+                return;
             }
+
+            Strength strength = zxcvbn.measure(password);
+            int score = strength.getScore();
+
+            // 🔥 Set Progress
+            strengthBar.setProgress(score);
+
+            // 🎨 Strength Label + Color
+            if (score <= 1) {
+                strengthLabel.setText("Weak 😟");
+                strengthLabel.setTextColor(Color.RED);
+            } else if (score == 2) {
+                strengthLabel.setText("Medium 😐");
+                strengthLabel.setTextColor(Color.parseColor("#FFA500")); // Orange
+            } else {
+                strengthLabel.setText("Strong 💪");
+                strengthLabel.setTextColor(Color.GREEN);
+            }
+
+            // ⏱ Crack Time
+            String time = strength.getCrackTimesDisplay()
+                    .getOfflineSlowHashing1e4PerSecond();
+            crackTime.setText("Time to crack: " + time);
+
+            // 💡 Suggestions
+            StringBuilder suggestText = new StringBuilder();
+
+            if (strength.getFeedback().getSuggestions().isEmpty()) {
+                suggestText.append("Good password 👍");
+            } else {
+                for (String s : strength.getFeedback().getSuggestions()) {
+                    suggestText.append("• ").append(s).append("\n");
+                }
+            }
+
+            // ⚠ Common Password Warning
+            if (isCommon(password)) {
+                suggestText.append("\n⚠ This is a commonly used password!");
+            }
+
+            suggestions.setText(suggestText.toString());
         });
     }
 }
