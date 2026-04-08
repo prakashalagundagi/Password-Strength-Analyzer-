@@ -1,27 +1,82 @@
 <LinearLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:orientation="vertical"
-    android:padding="20dp"
+    android:padding="24dp"
+    android:background="#F5F5F5"
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
-    <EditText
-        android:id="@+id/passwordInput"
-        android:hint="Enter Password"
-        android:inputType="textPassword"
-        android:layout_width="match_parent"
+    <!-- Title -->
+    <TextView
+        android:text="Password Strength Analyzer"
+        android:textSize="22sp"
+        android:textStyle="bold"
+        android:textColor="#222"
+        android:layout_marginBottom="16dp"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"/>
 
+    <!-- Password Input with Toggle -->
+    <com.google.android.material.textfield.TextInputLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        app:endIconMode="password_toggle">
+
+        <com.google.android.material.textfield.TextInputEditText
+            android:id="@+id/passwordInput"
+            android:hint="Enter Password"
+            android:inputType="textPassword"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"/>
+    </com.google.android.material.textfield.TextInputLayout>
+
+    <!-- Button -->
     <Button
         android:id="@+id/checkBtn"
         android:text="Check Strength"
+        android:layout_marginTop="16dp"
+        android:backgroundTint="#6200EE"
+        android:textColor="#FFFFFF"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"/>
 
+    <!-- Strength Label -->
     <TextView
-        android:id="@+id/resultText"
+        android:id="@+id/strengthLabel"
+        android:text="Strength: "
         android:textSize="18sp"
-        android:paddingTop="20dp"
+        android:textStyle="bold"
+        android:layout_marginTop="20dp"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"/>
+
+    <!-- Progress Bar -->
+    <ProgressBar
+        android:id="@+id/strengthBar"
+        style="?android:attr/progressBarStyleHorizontal"
+        android:max="4"
+        android:progress="0"
+        android:layout_width="match_parent"
+        android:layout_height="10dp"
+        android:layout_marginTop="8dp"/>
+
+    <!-- Crack Time -->
+    <TextView
+        android:id="@+id/crackTime"
+        android:text="Time to crack: "
+        android:textSize="16sp"
+        android:layout_marginTop="16dp"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"/>
+
+    <!-- Suggestions -->
+    <TextView
+        android:id="@+id/suggestions"
+        android:text="Suggestions:"
+        android:textSize="16sp"
+        android:textColor="#555"
+        android:layout_marginTop="12dp"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"/>
 
