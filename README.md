@@ -152,7 +152,8 @@ npm run preview
 *Full-stack developer specializing in modern web technologies, security-focused applications, and user experience design.*
 
 - **GitHub**: [@prakashalagundagi](https://github.com/prakashalagundagi)
-- **Portfolio**: [prakashalagundagi.My](https://prakashra.dev)
+- **Portfolio**: [prakashalagundagi.My-Website-
+](https://prakashalagundagi.github.io/My-Website-/v)
 - **Email**: contact@prakashra.dev
 
 ## License
