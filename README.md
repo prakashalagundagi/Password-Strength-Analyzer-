@@ -154,7 +154,7 @@ npm run preview
 - **GitHub**: [@prakashalagundagi](https://github.com/prakashalagundagi)
 - **Portfolio**: [prakashalagundagi.My-Website-
 ](https://prakashalagundagi.github.io/My-Website-/v)
-- **Email**: contact@prakashra.dev
+- **Email**: contact@prakashalagundagi20@gmail.com
 
 ## License
 
