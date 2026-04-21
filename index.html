@@ -1,12 +1,619 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Password Strength Analyzer</title>
-  </head>
-  <body>
-    <div id="root"></div>
-    <script type="module" src="/src/main.jsx"></script>
-  </body>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        body::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: radial-gradient(circle, rgba(255,255,255,0.1) 0%, transparent 70%);
+            animation: aurora 20s ease-in-out infinite;
+        }
+
+        @keyframes aurora {
+            0%, 100% { transform: rotate(0deg) scale(1); }
+            50% { transform: rotate(180deg) scale(1.1); }
+        }
+
+        .container {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            border-radius: 20px;
+            padding: 40px;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+            max-width: 500px;
+            width: 100%;
+            position: relative;
+            z-index: 1;
+        }
+
+        h1 {
+            text-align: center;
+            color: #333;
+            margin-bottom: 30px;
+            font-size: 2rem;
+            font-weight: 700;
+        }
+
+        .password-input-container {
+            position: relative;
+            margin-bottom: 20px;
+        }
+
+        .password-input {
+            width: 100%;
+            padding: 15px 50px 15px 15px;
+            border: 2px solid #e1e5e9;
+            border-radius: 10px;
+            font-size: 16px;
+            transition: all 0.3s ease;
+            background: rgba(255, 255, 255, 0.8);
+        }
+
+        .password-input:focus {
+            outline: none;
+            border-color: #667eea;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+        }
+
+        .toggle-visibility {
+            position: absolute;
+            right: 15px;
+            top: 50%;
+            transform: translateY(-50%);
+            background: none;
+            border: none;
+            cursor: pointer;
+            color: #666;
+            font-size: 18px;
+            padding: 5px;
+        }
+
+        .toggle-visibility:hover {
+            color: #667eea;
+        }
+
+        .strength-meter {
+            margin-bottom: 20px;
+        }
+
+        .strength-bar {
+            height: 8px;
+            background: #e1e5e9;
+            border-radius: 4px;
+            overflow: hidden;
+            margin-bottom: 10px;
+        }
+
+        .strength-fill {
+            height: 100%;
+            transition: all 0.3s ease;
+            border-radius: 4px;
+        }
+
+        .strength-text {
+            font-size: 14px;
+            font-weight: 600;
+            text-align: center;
+            margin-bottom: 5px;
+        }
+
+        .strength-details {
+            font-size: 12px;
+            color: #666;
+            text-align: center;
+        }
+
+        .strength-0 { background: #ff4757; width: 20%; }
+        .strength-1 { background: #ff6348; width: 40%; }
+        .strength-2 { background: #ffa502; width: 60%; }
+        .strength-3 { background: #26de81; width: 80%; }
+        .strength-4 { background: #20bf6b; width: 100%; }
+
+        .rules-checklist {
+            margin-bottom: 20px;
+        }
+
+        .rules-title {
+            font-size: 14px;
+            font-weight: 600;
+            color: #333;
+            margin-bottom: 10px;
+        }
+
+        .rule-item {
+            display: flex;
+            align-items: center;
+            padding: 8px 0;
+            font-size: 14px;
+            color: #666;
+        }
+
+        .rule-icon {
+            width: 20px;
+            height: 20px;
+            margin-right: 10px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 12px;
+            font-weight: bold;
+        }
+
+        .rule-valid {
+            background: #26de81;
+            color: white;
+        }
+
+        .rule-invalid {
+            background: #e1e5e9;
+            color: #999;
+        }
+
+        .suggestions {
+            background: rgba(102, 126, 234, 0.1);
+            border-radius: 10px;
+            padding: 20px;
+            margin-bottom: 20px;
+        }
+
+        .suggestions-title {
+            font-size: 14px;
+            font-weight: 600;
+            color: #333;
+            margin-bottom: 10px;
+        }
+
+        .suggestion-item {
+            display: flex;
+            align-items: center;
+            padding: 8px 0;
+            font-size: 14px;
+            color: #666;
+        }
+
+        .suggestion-password {
+            flex: 1;
+            font-family: 'Courier New', monospace;
+            background: rgba(255, 255, 255, 0.8);
+            padding: 8px 12px;
+            border-radius: 6px;
+            margin-right: 10px;
+            word-break: break-all;
+        }
+
+        .btn {
+            padding: 8px 16px;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 12px;
+            font-weight: 600;
+            transition: all 0.3s ease;
+        }
+
+        .btn-primary {
+            background: #667eea;
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background: #5a67d8;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(102, 126, 234, 0.3);
+        }
+
+        .btn-primary:active {
+            transform: translateY(0);
+        }
+
+        .btn-secondary {
+            background: #e1e5e9;
+            color: #666;
+        }
+
+        .btn-secondary:hover {
+            background: #d1d5d9;
+            transform: translateY(-1px);
+        }
+
+        /* Professional UI enhancements */
+        .container {
+            animation: slideIn 0.5s ease-out;
+        }
+
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .password-input:focus {
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0% { box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1); }
+            50% { box-shadow: 0 0 0 6px rgba(102, 126, 234, 0.05); }
+            100% { box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1); }
+        }
+
+        .rule-item {
+            transition: all 0.3s ease;
+        }
+
+        .rule-item:hover {
+            transform: translateX(5px);
+        }
+
+        .suggestion-item {
+            transition: all 0.3s ease;
+        }
+
+        .suggestion-item:hover {
+            background: rgba(255, 255, 255, 0.9);
+            border-radius: 8px;
+            padding: 12px;
+            margin: 0 -4px;
+        }
+
+        /* Loading animation */
+        .analyzing {
+            position: relative;
+        }
+
+        .analyzing::after {
+            content: '';
+            position: absolute;
+            top: 50%;
+            right: 60px;
+            transform: translateY(-50%);
+            width: 16px;
+            height: 16px;
+            border: 2px solid #e1e5e9;
+            border-top: 2px solid #667eea;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            0% { transform: translateY(-50%) rotate(0deg); }
+            100% { transform: translateY(-50%) rotate(360deg); }
+        }
+
+        .suggestion-actions {
+            display: flex;
+            gap: 8px;
+        }
+
+        .refresh-btn {
+            width: 100%;
+            margin-top: 10px;
+        }
+
+        .hidden {
+            display: none;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Password Strength Analyzer</h1>
+        
+        <div class="password-input-container">
+            <input 
+                type="password" 
+                id="passwordInput" 
+                class="password-input" 
+                placeholder="Enter your password..."
+                autocomplete="off"
+            >
+            <button id="toggleVisibility" class="toggle-visibility">👁️</button>
+        </div>
+
+        <div class="strength-meter">
+            <div class="strength-text" id="strengthText">Enter a password to analyze</div>
+            <div class="strength-bar">
+                <div class="strength-fill" id="strengthFill"></div>
+            </div>
+            <div class="strength-details" id="strengthDetails"></div>
+        </div>
+
+        <div class="rules-checklist">
+            <div class="rules-title">Password Requirements</div>
+            <div id="rulesList"></div>
+        </div>
+
+        <div class="suggestions" id="suggestionsContainer">
+            <div class="suggestions-title">Strong Password Suggestions</div>
+            <div id="suggestionsList"></div>
+            <button id="refreshSuggestions" class="btn btn-secondary refresh-btn">Refresh Suggestions</button>
+        </div>
+    </div>
+
+    <script>
+        // Performance optimizations
+        const cache = new Map();
+        let analysisTimeout;
+        
+        // Debounce function for performance
+        function debounce(func, wait) {
+            return function executedFunction(...args) {
+                const later = () => {
+                    clearTimeout(analysisTimeout);
+                    func(...args);
+                };
+                clearTimeout(analysisTimeout);
+                analysisTimeout = setTimeout(later, wait);
+            };
+        }
+
+        // Memoized password strength analysis
+        function analyzePassword(password) {
+            if (!password) {
+                return {
+                    score: 0,
+                    feedback: [],
+                    crackTime: 'instant',
+                    entropy: 0
+                };
+            }
+
+            // Check cache first
+            if (cache.has(password)) {
+                return cache.get(password);
+            }
+
+            let score = 0;
+            let feedback = [];
+            let entropy = 0;
+
+            // Length bonus
+            if (password.length >= 8) score += 1;
+            if (password.length >= 12) score += 1;
+            if (password.length >= 16) score += 1;
+
+            // Character variety
+            if (/[a-z]/.test(password)) score += 0.5;
+            if (/[A-Z]/.test(password)) score += 0.5;
+            if (/[0-9]/.test(password)) score += 0.5;
+            if (/[^a-zA-Z0-9]/.test(password)) score += 0.5;
+
+            // Common patterns penalty
+            if (/(.)\1{2,}/.test(password)) {
+                score -= 0.5;
+                feedback.push('Avoid repeated characters');
+            }
+
+            if (/^[a-zA-Z]+$/.test(password) || /^[0-9]+$/.test(password)) {
+                score -= 0.5;
+                feedback.push('Use mixed character types');
+            }
+
+            // Calculate entropy
+            const charsetSize = getCharsetSize(password);
+            entropy = Math.floor(password.length * Math.log2(charsetSize));
+
+            // Normalize score to 0-4
+            score = Math.max(0, Math.min(4, Math.floor(score)));
+
+            // Estimate crack time
+            const crackTime = estimateCrackTime(entropy);
+
+            // Generate feedback
+            if (score < 2) {
+                feedback.push('Consider using a longer password');
+                feedback.push('Add more character variety');
+            } else if (score < 4) {
+                feedback.push('Good password, could be stronger');
+            }
+
+            const result = {
+                score,
+                feedback: feedback.slice(0, 3),
+                crackTime,
+                entropy
+            };
+
+            // Cache the result (limit cache size)
+            if (cache.size > 100) {
+                const firstKey = cache.keys().next().value;
+                cache.delete(firstKey);
+            }
+            cache.set(password, result);
+
+            return result;
+        }
+
+        function getCharsetSize(password) {
+            let size = 0;
+            if (/[a-z]/.test(password)) size += 26;
+            if (/[A-Z]/.test(password)) size += 26;
+            if (/[0-9]/.test(password)) size += 10;
+            if (/[^a-zA-Z0-9]/.test(password)) size += 32;
+            return Math.max(size, 1);
+        }
+
+        function estimateCrackTime(entropy) {
+            if (entropy < 28) return 'instant';
+            if (entropy < 36) return 'minutes';
+            if (entropy < 44) return 'hours';
+            if (entropy < 52) return 'days';
+            if (entropy < 60) return 'years';
+            if (entropy < 68) return 'centuries';
+            return 'millennia';
+        }
+
+        // Password rules evaluation
+        function evaluatePassword(password) {
+            const rules = [
+                { id: 'length', text: 'At least 8 characters', valid: password.length >= 8 },
+                { id: 'lowercase', text: 'Contains lowercase letter', valid: /[a-z]/.test(password) },
+                { id: 'uppercase', text: 'Contains uppercase letter', valid: /[A-Z]/.test(password) },
+                { id: 'number', text: 'Contains number', valid: /[0-9]/.test(password) },
+                { id: 'special', text: 'Contains special character', valid: /[^a-zA-Z0-9]/.test(password) }
+            ];
+            return rules;
+        }
+
+        // Password generator
+        function generateStrongPassword(length = 16) {
+            const lowercase = 'abcdefghijklmnopqrstuvwxyz';
+            const uppercase = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
+            const numbers = '0123456789';
+            const symbols = '!@#$%^&*()_+-=[]{}|;:,.<>?';
+            const allChars = lowercase + uppercase + numbers + symbols;
+
+            let password = '';
+            
+            // Ensure at least one of each character type
+            password += lowercase[Math.floor(Math.random() * lowercase.length)];
+            password += uppercase[Math.floor(Math.random() * uppercase.length)];
+            password += numbers[Math.floor(Math.random() * numbers.length)];
+            password += symbols[Math.floor(Math.random() * symbols.length)];
+
+            // Fill the rest
+            for (let i = 4; i < length; i++) {
+                password += allChars[Math.floor(Math.random() * allChars.length)];
+            }
+
+            // Shuffle the password
+            return password.split('').sort(() => Math.random() - 0.5).join('');
+        }
+
+        // UI functions
+        function updateStrengthMeter(analysis) {
+            const strengthText = document.getElementById('strengthText');
+            const strengthFill = document.getElementById('strengthFill');
+            const strengthDetails = document.getElementById('strengthDetails');
+
+            const strengthLabels = ['Very Weak', 'Weak', 'Fair', 'Good', 'Strong'];
+            const strengthColors = ['#ff4757', '#ff6348', '#ffa502', '#26de81', '#20bf6b'];
+
+            strengthText.textContent = strengthLabels[analysis.score];
+            strengthText.style.color = strengthColors[analysis.score];
+            
+            strengthFill.className = `strength-fill strength-${analysis.score}`;
+            
+            strengthDetails.textContent = `Entropy: ${analysis.entropy} bits • Crack time: ${analysis.crackTime}`;
+        }
+
+        function updateRulesList(password) {
+            const rulesList = document.getElementById('rulesList');
+            const rules = evaluatePassword(password);
+
+            rulesList.innerHTML = rules.map(rule => `
+                <div class="rule-item">
+                    <div class="rule-icon ${rule.valid ? 'rule-valid' : 'rule-invalid'}">
+                        ${rule.valid ? '✓' : ''}
+                    </div>
+                    <span>${rule.text}</span>
+                </div>
+            `).join('');
+        }
+
+        function updateSuggestions() {
+            const suggestionsList = document.getElementById('suggestionsList');
+            const suggestions = [];
+            
+            for (let i = 0; i < 3; i++) {
+                const password = generateStrongPassword(12 + Math.floor(Math.random() * 8));
+                suggestions.push(password);
+            }
+
+            suggestionsList.innerHTML = suggestions.map((password, index) => `
+                <div class="suggestion-item">
+                    <div class="suggestion-password">${password}</div>
+                    <div class="suggestion-actions">
+                        <button class="btn btn-primary" onclick="applySuggestion('${password}')">Apply</button>
+                        <button class="btn btn-secondary" onclick="copyToClipboard('${password}')">Copy</button>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        function applySuggestion(password) {
+            document.getElementById('passwordInput').value = password;
+            document.getElementById('passwordInput').dispatchEvent(new Event('input'));
+        }
+
+        function copyToClipboard(text) {
+            navigator.clipboard.writeText(text).then(() => {
+                // Show feedback (you could add a toast notification here)
+                const button = event.target;
+                const originalText = button.textContent;
+                button.textContent = 'Copied!';
+                setTimeout(() => {
+                    button.textContent = originalText;
+                }, 2000);
+            });
+        }
+
+        // Event listeners
+        document.addEventListener('DOMContentLoaded', function() {
+            const passwordInput = document.getElementById('passwordInput');
+            const toggleVisibility = document.getElementById('toggleVisibility');
+            const refreshSuggestions = document.getElementById('refreshSuggestions');
+
+            // Initial suggestions
+            updateSuggestions();
+
+            // Debounced password input handler for performance
+            const debouncedAnalysis = debounce(function(password) {
+                const analysis = analyzePassword(password);
+                updateStrengthMeter(analysis);
+                updateRulesList(password);
+            }, 150);
+
+            // Password input handler
+            passwordInput.addEventListener('input', function() {
+                debouncedAnalysis(this.value);
+            });
+
+            // Toggle visibility
+            toggleVisibility.addEventListener('click', function() {
+                const type = passwordInput.type === 'password' ? 'text' : 'password';
+                passwordInput.type = type;
+                this.textContent = type === 'password' ? '👁️' : '👁️‍🗨️';
+            });
+
+            // Refresh suggestions
+            refreshSuggestions.addEventListener('click', updateSuggestions);
+
+            // Initial empty state
+            updateStrengthMeter(analyzePassword(''));
+            updateRulesList('');
+        });
+    </script>
+</body>
 </html>
