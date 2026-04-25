@@ -1,8 +1,8 @@
 # Password Strength Analyzer
 
-**A professional, client-side password strength analysis tool built with modern web technologies**
+**A professional, client-side password strength analysis tool built with vanilla web technologies**
 
-![Password Strength Analyzer](https://img.shields.io/badge/Password-Analysis-blue) ![React](https://img.shields.io/badge/React-19.2.3-blue) ![JavaScript](https://img.shields.io/badge/JavaScript-ES6+-yellow) ![Tailwind CSS](https://img.shields.io/badge/Tailwind-4.1.17-38B2AC) ![License](https://img.shields.io/badge/License-MIT-green)
+![Password Strength Analyzer](https://img.shields.io/badge/Password-Analysis-blue) ![HTML5](https://img.shields.io/badge/HTML5-E34F26?logo=html5&logoColor=white) ![CSS3](https://img.shields.io/badge/CSS3-1572B6?logo=css3&logoColor=white) ![JavaScript](https://img.shields.io/badge/JavaScript-ES6+-F7DF1E?logo=javascript&logoColor=black) ![License](https://img.shields.io/badge/License-MIT-green)
 
 ## Overview
 
@@ -23,59 +23,54 @@ The Password Strength Analyzer is a sophisticated, privacy-focused web applicati
 - **Responsive Design**: Optimized for desktop, tablet, and mobile devices
 - **Accessibility**: Full keyboard navigation and screen reader support
 - **Offline Capability**: Works without internet connection
+- **No Dependencies**: Single HTML file deployment with no external libraries
 
 ### Technical Specifications
-- **Algorithm**: zxcvbn password strength estimator
+- **Algorithm**: Custom password strength estimator with entropy calculation
 - **Security Standards**: Follows NIST guidelines for password complexity
 - **Performance**: Optimized for instant feedback with minimal resource usage
 - **Compatibility**: Modern browsers (Chrome, Firefox, Safari, Edge)
+- **Architecture**: Single-page application with embedded CSS and JavaScript
 
 ## Technology Stack
 
 ### Frontend
-- **React 19.2.3**: Modern component-based UI framework
-- **JavaScript ES6+**: Clean, maintainable codebase
-- **Tailwind CSS 4.1.17**: Utility-first CSS framework
-- **Framer Motion 12.38.0**: Smooth animations and transitions
+- **HTML5**: Semantic markup and modern web standards
+- **CSS3**: Advanced styling with animations and glassmorphism effects
+- **JavaScript ES6+**: Modern JavaScript with performance optimizations
+- **Web APIs**: Clipboard API for secure password copying
 
-### Build Tools
-- **Vite 7.2.4**: Fast development and build tooling
-- **vite-plugin-singlefile**: Single HTML file deployment
-- **@tailwindcss/vite**: Integrated Tailwind CSS processing
-
-### Libraries
-- **zxcvbn 4.4.2**: Industry-standard password strength estimation
-- **clsx 2.1.1**: Conditional className utility
-- **tailwind-merge 3.4.0**: Tailwind CSS class merging
+### Architecture
+- **Single File Application**: Self-contained HTML file
+- **No Build Process**: Direct deployment ready
+- **Client-Side Only**: Zero server dependencies
+- **Progressive Enhancement**: Works across all modern browsers
 
 ## Installation
 
-### Prerequisites
-- Node.js 18.0 or higher
-- npm or yarn package manager
+### Quick Start
+No installation required! This is a standalone HTML file.
 
-### Setup
 ```bash
-# Clone the repository
-git clone https://github.com/prakashra/password-strength-analyzer.git
+# Download the file
+curl -O https://raw.githubusercontent.com/prakashalagundagi/Password-Strength-Analyzer-/main/index.html
 
-# Navigate to the project directory
-cd password-strength-analyzer
-
-# Install dependencies
-npm install
-
-# Start development server
-npm run dev
+# Open in browser
+open index.html  # macOS
+start index.html  # Windows
+xdg-open index.html  # Linux
 ```
 
-### Build for Production
+### Local Development
 ```bash
-# Build optimized static files
-npm run build
+# Clone the repository
+git clone https://github.com/prakashalagundagi/Password-Strength-Analyzer-.git
 
-# Preview production build
-npm run preview
+# Navigate to the project directory
+cd Password-Strength-Analyzer-
+
+# Open index.html in your browser
+# No additional setup needed!
 ```
 
 ## Usage
@@ -121,14 +116,14 @@ npm run preview
 ### Metrics
 - **Load Time**: < 1 second on average connection
 - **Analysis Speed**: < 100ms for typical passwords
-- **Bundle Size**: 1.2MB (gzipped: 514KB)
-- **Memory Usage**: < 50MB typical usage
+- **Bundle Size**: 62KB (single HTML file)
+- **Memory Usage**: < 10MB typical usage
 
 ### Optimization
-- **Code Splitting**: Lazy loading for optimal performance
-- **Tree Shaking**: Eliminates unused code
-- **Minification**: Optimized production builds
-- **Caching**: Efficient asset caching strategies
+- **Debounced Input**: Prevents excessive calculations during typing
+- **Memoization**: Caches password analysis results
+- **Efficient DOM Updates**: Minimizes reflows and repaints
+- **CSS Animations**: Hardware-accelerated transitions
 
 ## Contributing
 
@@ -162,19 +157,20 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 
 ## Acknowledgments
 
-- **zxcvbn**: Password strength estimation library by Dropbox
-- **React**: UI framework by Meta
-- **Tailwind CSS**: CSS framework by Adam Wathan
-- **Framer Motion**: Animation library by Framer
+- **MDN Web Docs**: For comprehensive web API documentation
+- **NIST Guidelines**: For password security standards
+- **Open Web Standards**: For ensuring cross-browser compatibility
 
 ## Changelog
 
 ### Version 1.0.0
 - Initial release with core password analysis features
-- Modern glassmorphism UI design
+- Modern glassmorphism UI design with aurora effects
 - Client-side privacy-focused architecture
 - Responsive design for all devices
 - Smart password generation system
+- Single HTML file deployment
+- Performance optimizations with debouncing and caching
 
 ---
 

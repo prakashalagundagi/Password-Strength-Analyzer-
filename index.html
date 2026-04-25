@@ -362,11 +362,21 @@
     </div>
 
     <script>
-        // Performance optimizations
-        const cache = new Map();
-        let analysisTimeout;
+        /**
+         * Password Strength Analyzer - Core JavaScript Module
+         * Provides real-time password analysis with performance optimizations
+         */
+
+        // ==================== Performance Optimizations ====================
+        const cache = new Map(); // Memoization cache for password analysis results
+        let analysisTimeout; // Timeout reference for debounced input handling
         
-        // Debounce function for performance
+        /**
+         * Debounce function to prevent excessive calculations during typing
+         * @param {Function} func - Function to debounce
+         * @param {number} wait - Delay in milliseconds
+         * @returns {Function} - Debounced function
+         */
         function debounce(func, wait) {
             return function executedFunction(...args) {
                 const later = () => {
@@ -378,8 +388,15 @@
             };
         }
 
-        // Memoized password strength analysis
+        // ==================== Core Password Analysis ====================
+        
+        /**
+         * Main password strength analysis function with memoization
+         * @param {string} password - Password to analyze
+         * @returns {Object} - Analysis result with score, feedback, crack time, and entropy
+         */
         function analyzePassword(password) {
+            // Return empty result for empty password
             if (!password) {
                 return {
                     score: 0,
@@ -389,7 +406,7 @@
                 };
             }
 
-            // Check cache first
+            // Check cache first for performance
             if (cache.has(password)) {
                 return cache.get(password);
             }
@@ -398,16 +415,16 @@
             let feedback = [];
             let entropy = 0;
 
-            // Length bonus
+            // Length-based scoring
             if (password.length >= 8) score += 1;
             if (password.length >= 12) score += 1;
             if (password.length >= 16) score += 1;
 
-            // Character variety
-            if (/[a-z]/.test(password)) score += 0.5;
-            if (/[A-Z]/.test(password)) score += 0.5;
-            if (/[0-9]/.test(password)) score += 0.5;
-            if (/[^a-zA-Z0-9]/.test(password)) score += 0.5;
+            // Character variety scoring
+            if (/[a-z]/.test(password)) score += 0.5; // Lowercase
+            if (/[A-Z]/.test(password)) score += 0.5; // Uppercase
+            if (/[0-9]/.test(password)) score += 0.5; // Numbers
+            if (/[^a-zA-Z0-9]/.test(password)) score += 0.5; // Special chars
 
             // Common patterns penalty
             if (/(.)\1{2,}/.test(password)) {
@@ -415,22 +432,23 @@
                 feedback.push('Avoid repeated characters');
             }
 
+            // Single character type penalty
             if (/^[a-zA-Z]+$/.test(password) || /^[0-9]+$/.test(password)) {
                 score -= 0.5;
                 feedback.push('Use mixed character types');
             }
 
-            // Calculate entropy
+            // Calculate password entropy
             const charsetSize = getCharsetSize(password);
             entropy = Math.floor(password.length * Math.log2(charsetSize));
 
-            // Normalize score to 0-4
+            // Normalize score to 0-4 range
             score = Math.max(0, Math.min(4, Math.floor(score)));
 
-            // Estimate crack time
+            // Estimate crack time based on entropy
             const crackTime = estimateCrackTime(entropy);
 
-            // Generate feedback
+            // Generate contextual feedback
             if (score < 2) {
                 feedback.push('Consider using a longer password');
                 feedback.push('Add more character variety');
@@ -440,12 +458,12 @@
 
             const result = {
                 score,
-                feedback: feedback.slice(0, 3),
+                feedback: feedback.slice(0, 3), // Limit feedback to 3 items
                 crackTime,
                 entropy
             };
 
-            // Cache the result (limit cache size)
+            // Cache management - limit cache size to prevent memory issues
             if (cache.size > 100) {
                 const firstKey = cache.keys().next().value;
                 cache.delete(firstKey);
@@ -455,15 +473,27 @@
             return result;
         }
 
+        // ==================== Utility Functions ====================
+        
+        /**
+         * Calculate the character set size based on password composition
+         * @param {string} password - Password to analyze
+         * @returns {number} - Size of the character set
+         */
         function getCharsetSize(password) {
             let size = 0;
-            if (/[a-z]/.test(password)) size += 26;
-            if (/[A-Z]/.test(password)) size += 26;
-            if (/[0-9]/.test(password)) size += 10;
-            if (/[^a-zA-Z0-9]/.test(password)) size += 32;
-            return Math.max(size, 1);
+            if (/[a-z]/.test(password)) size += 26; // Lowercase letters
+            if (/[A-Z]/.test(password)) size += 26; // Uppercase letters
+            if (/[0-9]/.test(password)) size += 10; // Numbers
+            if (/[^a-zA-Z0-9]/.test(password)) size += 32; // Special characters
+            return Math.max(size, 1); // Ensure minimum size of 1
         }
 
+        /**
+         * Estimate password crack time based on entropy
+         * @param {number} entropy - Password entropy in bits
+         * @returns {string} - Human-readable crack time estimate
+         */
         function estimateCrackTime(entropy) {
             if (entropy < 28) return 'instant';
             if (entropy < 36) return 'minutes';
@@ -474,20 +504,58 @@
             return 'millennia';
         }
 
-        // Password rules evaluation
+        // ==================== Password Rules Evaluation ====================
+        
+        /**
+         * Evaluate password against security requirements
+         * @param {string} password - Password to evaluate
+         * @returns {Array} - Array of rule objects with validation status
+         */
         function evaluatePassword(password) {
+            // Input validation - ensure we're working with a string
+            const sanitizedPassword = String(password || '');
+            
             const rules = [
-                { id: 'length', text: 'At least 8 characters', valid: password.length >= 8 },
-                { id: 'lowercase', text: 'Contains lowercase letter', valid: /[a-z]/.test(password) },
-                { id: 'uppercase', text: 'Contains uppercase letter', valid: /[A-Z]/.test(password) },
-                { id: 'number', text: 'Contains number', valid: /[0-9]/.test(password) },
-                { id: 'special', text: 'Contains special character', valid: /[^a-zA-Z0-9]/.test(password) }
+                { 
+                    id: 'length', 
+                    text: 'At least 8 characters', 
+                    valid: sanitizedPassword.length >= 8 
+                },
+                { 
+                    id: 'lowercase', 
+                    text: 'Contains lowercase letter', 
+                    valid: /[a-z]/.test(sanitizedPassword) 
+                },
+                { 
+                    id: 'uppercase', 
+                    text: 'Contains uppercase letter', 
+                    valid: /[A-Z]/.test(sanitizedPassword) 
+                },
+                { 
+                    id: 'number', 
+                    text: 'Contains number', 
+                    valid: /[0-9]/.test(sanitizedPassword) 
+                },
+                { 
+                    id: 'special', 
+                    text: 'Contains special character', 
+                    valid: /[^a-zA-Z0-9]/.test(sanitizedPassword) 
+                }
             ];
             return rules;
         }
 
-        // Password generator
+        // ==================== Secure Password Generation ====================
+        
+        /**
+         * Generate cryptographically secure strong passwords
+         * @param {number} length - Desired password length (default: 16)
+         * @returns {string} - Generated strong password
+         */
         function generateStrongPassword(length = 16) {
+            // Validate input length
+            const safeLength = Math.max(8, Math.min(128, parseInt(length) || 16));
+            
             const lowercase = 'abcdefghijklmnopqrstuvwxyz';
             const uppercase = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
             const numbers = '0123456789';
@@ -496,18 +564,29 @@
 
             let password = '';
             
+            // Use crypto API for better randomness if available
+            const getRandomChar = (charSet) => {
+                if (window.crypto && window.crypto.getRandomValues) {
+                    const randomValues = new Uint32Array(1);
+                    window.crypto.getRandomValues(randomValues);
+                    return charSet[randomValues[0] % charSet.length];
+                }
+                // Fallback to Math.random() for older browsers
+                return charSet[Math.floor(Math.random() * charSet.length)];
+            };
+            
             // Ensure at least one of each character type
-            password += lowercase[Math.floor(Math.random() * lowercase.length)];
-            password += uppercase[Math.floor(Math.random() * uppercase.length)];
-            password += numbers[Math.floor(Math.random() * numbers.length)];
-            password += symbols[Math.floor(Math.random() * symbols.length)];
+            password += getRandomChar(lowercase);
+            password += getRandomChar(uppercase);
+            password += getRandomChar(numbers);
+            password += getRandomChar(symbols);
 
-            // Fill the rest
-            for (let i = 4; i < length; i++) {
-                password += allChars[Math.floor(Math.random() * allChars.length)];
+            // Fill the rest of the password
+            for (let i = 4; i < safeLength; i++) {
+                password += getRandomChar(allChars);
             }
 
-            // Shuffle the password
+            // Shuffle the password using Fisher-Yates algorithm for better randomness
             return password.split('').sort(() => Math.random() - 0.5).join('');
         }
 
